@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#101d25" />
   <meta name="description" content="Explore Vermillion in a navigable 3D island model — cities, luxury homes, petroleum exports and renewable energy." />
   <title>Vermillion — 3D Island Explorer</title>
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./style.css?v=2" />
   <script type="importmap">
   {
     "imports": {
@@ -85,6 +85,33 @@
     <div class="help-pill">DRAG TO ROTATE <span>·</span> SCROLL TO ZOOM <span>·</span> CLICK TO EXPLORE</div>
     <div class="credits">PROCEDURAL 3D CONCEPT <span>·</span> FICTIONAL GEOGRAPHY</div>
   </main>
-  <script type="module" src="./app.js"></script>
+  <script>
+// A visible message replaces silent failure when scripts or WebGL are blocked.
+(function(){
+ let failed=false;
+ function fail(message){
+  if(failed||window.vermillion3DReady)return;
+  failed=true;
+  const node=document.getElementById('loading');
+  if(!node)return;
+  node.classList.remove('hidden');
+  node.innerHTML='';
+  const title=document.createElement('strong');title.textContent='3D viewer could not start';
+  const p=document.createElement('p');p.textContent=message;
+  p.style.maxWidth='380px';p.style.textAlign='center';p.style.padding='0 16px';
+  const btn=document.createElement('button');btn.textContent='Try again';
+  btn.style.cssText='padding:10px 20px;border-radius:8px;border:0;background:#ddc397;color:#18323d;cursor:pointer';
+  btn.onclick=()=>location.reload();node.append(title,p,btn);
+ }
+ window.addEventListener('error',e=>{
+  if(!window.vermillion3DReady)fail('A required 3D script or graphics feature failed to load. Check that index.html, app.js and style.css were uploaded together, and that CDN access and WebGL are enabled.');
+ });
+ window.addEventListener('unhandledrejection',()=>{
+  fail('The 3D graphics engine failed during startup. Try another browser or turn on hardware acceleration.');
+ });
+ setTimeout(()=>{if(!window.vermillion3DReady)fail('The 3D model did not finish loading. Check your internet connection, your browser WebGL support, and whether app.js was uploaded.');},12000);
+})();
+</script>
+<script type="module" src="./app.js?v=2"></script>
 </body>
 </html>
