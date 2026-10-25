@@ -17,10 +17,10 @@ const locations = [
   {id:'sanridge',name:'Sanridge',type:'city',icon:'▤',sub:'Farms · Modern manufacturing',x:-5,z:17,region:'South-Central',kind:'Agriculture & manufacturing',description:'An inland production town supporting agriculture, food processing, specialized manufacturing and regional transport corridors.',label:true},
   {id:'eastpoint',name:'Eastpoint',type:'city',icon:'▥',sub:'Industry · Engineering',x:29,z:10,region:'Southeast',kind:'Energy services',description:'An industrial engineering city supporting oil operations, refining, freight movement and skilled technical employment.',label:true},
   {id:'offshore',name:'Vermillion Offshore Field',type:'energy',icon:'◈',sub:'Deepwater petroleum production',x:47,z:-10,region:'Eastern Offshore Waters',kind:'Oil extraction',description:'A conceptual offshore drilling and production platform. Vermillion’s massive international petroleum exports remain a dominant part of its economic identity.',label:true},
-  {id:'terminal',name:'Port Maren Oil Terminal',type:'energy',icon:'▣',sub:'Tank farms · Export docks',x:35,z:-5,region:'Port Maren',kind:'Oil export terminal',description:'A major liquid-cargo facility with storage tanks and tanker berths supporting the country’s enormous volume of international crude-oil sales.',label:false},
-  {id:'refinery',name:'Eastpoint Refinery',type:'energy',icon:'▧',sub:'Refining · Petrochemicals',x:32,z:8,region:'Eastpoint',kind:'Petroleum refining',description:'A petroleum processing site with industrial towers, pipes and supporting infrastructure. Its equipment is shown as a simplified 3D concept.',label:false},
+  {id:'terminal',name:'Port Maren Oil Terminal',type:'energy',icon:'▣',sub:'Tank farms · Export docks',x:35,z:-5,region:'Port Maren',kind:'Oil export terminal',description:'A major liquid-cargo facility with storage tanks and tanker berths supporting the country’s enormous volume of international crude-oil sales.',label:true},
+  {id:'refinery',name:'Eastpoint Refinery',type:'energy',icon:'▧',sub:'Refining · Petrochemicals',x:32,z:8,region:'Eastpoint',kind:'Petroleum refining',description:'A petroleum processing site with industrial towers, pipes and supporting infrastructure. Its equipment is shown as a simplified 3D concept.',label:true},
   {id:'windfarm',name:'North Bay Wind Farm',type:'energy',icon:'✳',sub:'Turbines · Clean electricity',x:-16,z:-18,region:'North Bay Highlands',kind:'Wind power',description:'A group of wind turbines on Vermillion’s breezy northern ridge. Their animated blades illustrate the expanding renewable-energy industry.',label:true},
-  {id:'solar',name:'Lakeside Solar Fields',type:'energy',icon:'▤',sub:'Photovoltaic arrays',x:-14,z:3,region:'Lakeside',kind:'Solar power',description:'Rows of solar panels convert the island’s abundant sunshine into electricity. Vermillion invests oil-derived wealth into new renewable generation.',label:false},
+  {id:'solar',name:'Lakeside Solar Fields',type:'energy',icon:'▤',sub:'Photovoltaic arrays',x:-14,z:3,region:'Lakeside',kind:'Solar power',description:'Rows of solar panels convert the island’s abundant sunshine into electricity. Vermillion invests oil-derived wealth into new renewable generation.',label:true},
   {id:'battery',name:'Central Energy Storage',type:'energy',icon:'◧',sub:'Utility-scale storage',x:-10,z:8,region:'Central Vermillion',kind:'Battery storage',description:'A conceptual grid-scale energy storage site, designed to support intermittent solar and wind generation and improve electricity reliability.',label:false},
   {id:'marina',name:'Harborview Marina',type:'landmark',icon:'⚓',sub:'Yachts · Waterfront promenade',x:19,z:19,region:'Harborview',kind:'Marina & leisure',description:'An inviting waterfront marina with floating docks, private yachts, palm-lined walkways and fine-dining districts.',label:false},
   {id:'estates',name:'Westridge Luxury Estates',type:'landmark',icon:'⌂',sub:'Contemporary multistorey homes',x:-33,z:6,region:'Westridge',kind:'Luxury housing',description:'A cluster of spacious, multistorey smart homes with flat roofs, shaded terraces, warm natural finishes and tropical landscaping.',label:false},
@@ -43,15 +43,15 @@ const pointer=new THREE.Vector2();
 const hoverPoint=new THREE.Vector3();
 
 const scene=new THREE.Scene();
-scene.background=new THREE.Color('#a4cdd7');
-scene.fog=new THREE.FogExp2('#a9d3d9',0.00255);
-const camera=new THREE.PerspectiveCamera(44,1,.1,850);
-camera.position.set(72,76,89);
+scene.background=new THREE.Color('#7bbfd7');
+scene.fog=new THREE.FogExp2('#a1d6e3',0.0016);
+const camera=new THREE.PerspectiveCamera(48,1,.1,850);
+camera.position.set(54,57,68);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.35;
+renderer.toneMappingExposure=1.16;
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.domElement.setAttribute('aria-label','3D model of Vermillion. Drag to rotate and scroll to zoom.');
@@ -64,13 +64,13 @@ controls.maxDistance=230;
 controls.minPolarAngle=.10;
 controls.maxPolarAngle=Math.PI/2-.035;
 controls.screenSpacePanning=false;
-controls.target.set(0,0,0);
+controls.target.set(5,1,0);
 controls.update();
 
 const hemi=new THREE.HemisphereLight('#f2fbff','#7e9984',2.15);scene.add(hemi);
 const sun=new THREE.DirectionalLight('#fff7e9',3.4);
 sun.position.set(-47,95,48);sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);
+sun.shadow.mapSize.set(1024,1024);
 sun.shadow.camera.left=-85;sun.shadow.camera.right=85;
 sun.shadow.camera.top=85;sun.shadow.camera.bottom=-85;
 sun.shadow.camera.near=1;sun.shadow.camera.far=210;
@@ -133,7 +133,7 @@ function groundY(x,z){return coastR(x,z)>1?-.2:terrainHeight(x,z);}
 // Island elevation mesh with beach, greenery, hills, and a natural coastline.
 const steps=160,rings=38;
 const verts=[],colors=[],indices=[];
-const sand=new THREE.Color('#dfd0ad'),low=new THREE.Color('#b3c998'),mid=new THREE.Color('#8dad79'),high=new THREE.Color('#728b77'),rock=new THREE.Color('#7e8b80');
+const sand=new THREE.Color('#ead4ae'),low=new THREE.Color('#9dc28a'),mid=new THREE.Color('#6a9b6e'),high=new THREE.Color('#567969'),rock=new THREE.Color('#87928b');
 for(let ri=0;ri<=rings;ri++){
  const r=ri/rings;
  for(let i=0;i<=steps;i++){
@@ -181,7 +181,7 @@ for(let i=0;i<250;i++){
 }
 const waterTex=new THREE.CanvasTexture(waterTextureCanvas);
 waterTex.wrapS=waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(20,20);
-const oceanMat=new THREE.MeshStandardMaterial({color:'#8ac2d5',map:waterTex,transparent:false,metalness:.12,roughness:.44,side:THREE.DoubleSide});
+const oceanMat=new THREE.MeshStandardMaterial({color:'#55afca',map:waterTex,transparent:false,metalness:.12,roughness:.44,side:THREE.DoubleSide});
 const water=mesh(new THREE.PlaneGeometry(1300,1300,1,1),oceanMat);
 water.rotation.x=-Math.PI/2;water.position.y=-.22;water.receiveShadow=true;
 // Island shallow ring adds a turquoise glow along the coast.
@@ -218,7 +218,7 @@ const cityPos=id=>[locationById[id].x,locationById[id].z];
  ['ravelle','portmaren','eastpoint','harborview'],
  ['sanridge','harborview'],
  ['lakeside','sanridge']
-].forEach((path,i)=>roadSegment(path.map(cityPos),i<3?1.3:.94,mats.asphalt,i<3));
+].forEach((path,i)=>roadSegment(path.map(cityPos),i<3?1.95:1.3,mats.asphalt,i<3));
 
 // BUILDINGS
 const residentialMaterials=[mats.plaster,mats.cream,mats.concrete,mats.warmRoof];
@@ -286,6 +286,52 @@ neighborhood('northbay',48,6,5.2,'coast');
 neighborhood('clearwater',39,5.9,3.7,'coast');
 neighborhood('lakeside',38,5.1,3.8,'suburb');
 neighborhood('sanridge',34,5.4,4.2,'suburb');
+
+// High-visibility architecture: a real 3D skyline rather than green land alone.
+// These are simple meshes so the island remains suitable for embedded WebGL.
+const landmarkGlass=new THREE.MeshStandardMaterial({color:'#6cb3c4',metalness:.24,roughness:.28});
+const landmarkGlassDark=new THREE.MeshStandardMaterial({color:'#2b667e',metalness:.28,roughness:.34});
+const sandstone=new THREE.MeshStandardMaterial({color:'#f0e4cc',roughness:.95});
+const oceanBlue=new THREE.MeshStandardMaterial({color:'#3d7b97',roughness:.75});
+const cargoOrange=new THREE.MeshStandardMaterial({color:'#c67f54',roughness:.92});
+const cargoRed=new THREE.MeshStandardMaterial({color:'#bf6153',roughness:.92});
+function landmarkTower(x,z,w,d,h,id,accent=landmarkGlass){
+ const y=groundY(x,z);
+ const base=box(w+1,.55,d+1,x,y+.26,z,mats.concrete);addInteractive(base,id);
+ const main=box(w,h,d,x,y+.6+h/2,z,accent);main.castShadow=true;addInteractive(main,id);
+ const cap=box(w+1,.38,d+1,x,y+.65+h,z,mats.white);addInteractive(cap,id);
+ for(let k=1;k<Math.floor(h/2);k++){
+  const fy=y+.7+k*2;
+  box(w+.08,.10,d+.09,x,fy,z,mats.plaster);
+ }
+ box(.22,h+.9,.22,x+w/2,y+.55+h/2,z+d/2,mats.white);
+}
+// Landmark skyscrapers visible from the initial aerial view.
+landmarkTower(4,2,3.3,3.0,30,'vermillion',landmarkGlassDark);
+landmarkTower(8,0,2.7,2.9,24,'vermillion');
+landmarkTower(1,4,3.0,2.4,20,'vermillion',landmarkGlass);
+landmarkTower(11,-13,2.5,2.4,17,'ravelle');
+landmarkTower(27,-4,3,2.5,15,'portmaren');
+// Large individually selectable multistory coastal homes.
+[[12,15],[16,13],[10,18],[14,19]].forEach(([x,z],i)=>{
+ const b=modelBuilding(x,z,3.7,3.1,4.8,'villa','harborview',310+i);
+ if(b){b.rotation.y=(i-1)*.16;}
+});
+[[ -29,2 ],[-31,5],[-26,8]].forEach(([x,z],i)=>{
+ const b=modelBuilding(x,z,3.3,3.0,4.2,'villa','westridge',400+i);
+ if(b)b.rotation.y=.18*i;
+});
+// Container yards and identifiable dockside details near the oil export port.
+for(let row=0;row<4;row++)for(let col=0;col<6;col++){
+ const x=29.5+col*1.0,z=-7.4+row*.9;
+ const y=groundY(x,z);
+ const m=box(.83,.62,.67,x,y+.34,z,(col+row)%3===0?cargoRed:(col+row)%3===1?cargoOrange:oceanBlue);
+ addInteractive(m,'portmaren');
+}
+// Visible waterfront resort cluster north of the island.
+const resort=modelBuilding(-23,-14,4.0,3.1,7.3,'tower','northbay',570);
+if(resort)resort.rotation.y=-.14;
+
 
 // Urban tree canopy rendered with instances for performance.
 const treeCount=290,treeLocations=[];
@@ -528,10 +574,10 @@ document.getElementById('orbitBtn').addEventListener('click',e=>{
 document.getElementById('timeBtn').addEventListener('click',()=>{
  dayMode=!dayMode;
  const day=dayMode;
- scene.background.set(day?'#a4cdd7':'#283f56');
- scene.fog.color.set(day?'#a9d3d9':'#435868');
+ scene.background.set(day?'#7bbfd7':'#283f56');
+ scene.fog.color.set(day?'#a1d6e3':'#435868');
  sun.intensity=day?3.4:.62;hemi.intensity=day?2.15:.81;fillLight.intensity=day?.7:.4;
- renderer.toneMappingExposure=day?1.35:.99;
+ renderer.toneMappingExposure=day?1.16:.86;
  lights.forEach(l=>l.intensity=day?0:8);
  document.getElementById('timeLabel').textContent=day?'Evening':'Daylight';
  document.getElementById('timeIcon').textContent=day?'☾':'☼';
@@ -593,8 +639,8 @@ function resize(){
  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
 }
 const resizer=new ResizeObserver(resize);resizer.observe(viewport);resize();
+let firstFrame=false;
 const fadeLoading=()=>{loading.classList.add('hidden');setTimeout(()=>loading.remove(),1100);};
-requestAnimationFrame(fadeLoading);
 
 function loop(){
  requestAnimationFrame(loop);
@@ -610,6 +656,7 @@ function loop(){
  }
  controls.update();
  renderer.render(scene,camera);
+ if(!firstFrame){firstFrame=true;window.vermillion3DReady=true;fadeLoading();}
  updateLabels();
 }
 loop();
