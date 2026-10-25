@@ -1,0 +1,14 @@
+/tmp/verify_vermillion.py:9: DeprecationWarning: Arrays of 2-dimensional vectors are deprecated. Use arrays of 3-dimensional vectors instead. (deprecated in NumPy 2.0)
+  mesh_area=sum(abs(np.cross(b-a0,c-a0))*0.5 for a0,b,c in a[tris])
+outline vertices: 296 mesh vertices: 1611 triangles: 2776
+outlined area: 18162 mesh area: 17647 coverage %: 97.17
+solar (-31.33, 7.96) radius 12
+battery (-6.19, 4.6) radius 6.3
+refinery (51.5, 17.7) radius 14
+terminal (68.5, -9.38) radius 14.5
+airport (28.14, -10.62) radius 18
+estates (-73.1, -21.95) radius 12
+marina (29.2, 30.09) radius 9.5
+SITES CLEARED: all industrial and large-landmark reserved footprints nonoverlapping.
+UI ELEMENT IDS: all direct element lookups resolved.
+SUCCESS

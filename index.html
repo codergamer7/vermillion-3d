@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101d25" />
+  <meta name="description" content="Explore the rebuilt, reference-matched 3D island of Vermillion: real coastline geometry, modern cities, villas, petroleum and renewable-energy infrastructure." />
+  <title>Vermillion — 3D Island Atlas V2</title>
+  <link rel="stylesheet" href="./style.css?v=3" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="app" id="app">
+    <div id="viewport" class="viewport" aria-label="Interactive 3D model of the island of Vermillion">
+      <div id="loading" class="loading" aria-live="polite">
+        <span class="loading-mark">V</span>
+        <strong>Building Vermillion</strong>
+        <p>Loading the reference-matched coastline, cities, oil terminal, villas and solar park…</p>
+        <div class="loading-bar"><span></span></div>
+      </div>
+      <div class="atmosphere" aria-hidden="true"></div>
+      <div class="world-overlay" id="worldOverlay"></div>
+      <div id="assetWarning" class="asset-warning" hidden>Missing terrain image — upload the complete <b>assets/terrain.jpg</b> folder from the ZIP.</div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span>V</span></div>
+        <div class="brand-copy"><strong>VERMILLION</strong><small>NATIONAL 3D EXPLORER <span class="brand-divider">/</span> ISLAND ATLAS</small></div>
+      </div>
+      <div class="top-actions">
+        <span class="simulation"><span class="live-dot"></span>INTERACTIVE 3D WORLD</span>
+        <button type="button" id="togglePanel" class="icon-button mobile-menu" aria-label="Toggle destinations">☰ <span>LOCATIONS</span></button>
+      </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-heading">
+        <div class="eyebrow">DISCOVER VERMILLION <span class="eyebrow-line"></span></div>
+        <h1>Your island.<br/><em>Rebuilt in 3D.</em></h1>
+        <p>Reference-shaped terrain, modeled luxury neighborhoods, real 3D buildings, oil terminals and clean-energy sites. Choose a destination to fly in.</p>
+      </div>
+      <label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" placeholder="Search cities, energy, landmarks…" type="search" autocomplete="off" aria-label="Search destinations"/><kbd>/</kbd></label>
+      <div class="filter-row" aria-label="Filter destinations">
+        <button type="button" class="filter active" data-filter="all">All</button>
+        <button type="button" class="filter" data-filter="city">Cities</button>
+        <button type="button" class="filter" data-filter="energy">Energy</button>
+        <button type="button" class="filter" data-filter="landmark">Places</button>
+      </div>
+      <div class="list-head"><span>DESTINATIONS</span><span id="resultCount">20 LOCATIONS</span></div>
+      <div class="destinations" id="destinations" role="list"></div>
+      <div class="sidebar-foot"><span class="sidebar-foot-icon">◈</span><div><strong>Independent island nation</strong><small>Mixed economy · Oil exports · Clean energy</small></div></div>
+    </aside>
+
+    <div class="map-caption"><span class="caption-signal">◉</span> VERMILLION <span class="caption-separator">/</span> REFERENCE-MATCHED MODEL <span class="caption-separator">/</span> EXPLORE IN 3D</div>
+    <div class="compass" aria-hidden="true"><div class="compass-arrow">▲</div><small>N</small></div>
+
+    <div id="detailCard" class="detail-card" hidden>
+      <button class="detail-close" id="detailClose" aria-label="Close location details">×</button>
+      <div class="detail-eyebrow" id="detailCategory">EXPLORE</div>
+      <h2 id="detailName">Vermillion City</h2>
+      <div class="detail-sub" id="detailSubtitle"></div>
+      <p id="detailDescription"></p>
+      <div class="detail-rule"></div>
+      <div class="detail-fact"><span>TYPE</span><strong id="detailType"></strong></div>
+      <div class="detail-fact"><span>REGION</span><strong id="detailRegion"></strong></div>
+      <button class="explore-button" id="exploreHere">Explore up close <span>↗</span></button>
+    </div>
+
+    <div class="toolbar" aria-label="Scene controls">
+      <div class="toolbar-primary">
+        <button id="homeBtn" type="button" title="Show the whole island"><span class="btn-icon">⌂</span><span>Island view</span></button>
+        <button id="streetBtn" type="button" title="Lower the camera near the selected location"><span class="btn-icon">◧</span><span>Street view</span></button>
+        <button id="timeBtn" type="button" title="Toggle day and evening"><span class="btn-icon" id="timeIcon">☾</span><span id="timeLabel">Evening</span></button>
+        <button id="orbitBtn" type="button" title="Toggle cinematic auto-rotation" aria-pressed="false"><span class="btn-icon">↻</span><span>Orbit</span></button>
+      </div>
+      <div class="toolbar-zoom"><button id="zoomIn" type="button" aria-label="Zoom in">+</button><div></div><button id="zoomOut" type="button" aria-label="Zoom out">−</button></div>
+    </div>
+    <div class="help-pill">DRAG TO ROTATE <span>·</span> SCROLL TO ZOOM <span>·</span> CLICK TO EXPLORE</div>
+    <div class="credits">3D TERRAIN TRACED FROM REFERENCE <span>·</span> BUILDINGS ARE FICTIONAL</div>
+  </main>
+  <script>
+// A visible message replaces silent failure when scripts or WebGL are blocked.
+(function(){
+ let failed=false;
+ function fail(message){
+  if(failed||window.vermillion3DReady)return;
+  failed=true;
+  const node=document.getElementById('loading');
+  if(!node)return;
+  node.classList.remove('hidden');
+  node.innerHTML='';
+  const title=document.createElement('strong');title.textContent='3D viewer could not start';
+  const p=document.createElement('p');p.textContent=message;
+  p.style.maxWidth='380px';p.style.textAlign='center';p.style.padding='0 16px';
+  const btn=document.createElement('button');btn.textContent='Try again';
+  btn.style.cssText='padding:10px 20px;border-radius:8px;border:0;background:#ddc397;color:#18323d;cursor:pointer';
+  btn.onclick=()=>location.reload();node.append(title,p,btn);
+ }
+ window.addEventListener('error',e=>{
+  if(!window.vermillion3DReady)fail('A required 3D script or graphics feature failed to load. Check that index.html, app.js, island-data.js, style.css and assets/terrain.jpg were uploaded together, and that CDN access and WebGL are enabled.');
+ });
+ window.addEventListener('unhandledrejection',()=>{
+  fail('The 3D graphics engine failed during startup. Try another browser or turn on hardware acceleration.');
+ });
+ setTimeout(()=>{if(!window.vermillion3DReady)fail('The 3D model did not finish loading. Check your internet connection, your browser WebGL support, and whether app.js was uploaded.');},30000);
+})();
+</script>
+<script type="module" src="./app.js?v=3"></script>
+</body>
+</html>
